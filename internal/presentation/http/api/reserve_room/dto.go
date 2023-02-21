@@ -12,8 +12,8 @@ import (
 type ReserveRoomRequest struct {
 	UserID string `json:"user_id,omitempty"`
 	RoomID string `json:"room_id,omitempty"`
-	From   string `json:"from,omitempty"`
-	To     string `json:"to,omitempty"`
+	From   string `json:"from"`
+	To     string `json:"to"`
 }
 
 type ReserveRoomResponse struct {
@@ -39,11 +39,11 @@ func parseRequest(r *http.Request) (ReserveRoomRequest, error) {
 		err      error
 	)
 
-	if _, err = time.Parse(common.DateLayout, req.From); err != nil {
+	if from, err = time.Parse(common.DateLayout, req.From); err != nil {
 		return ReserveRoomRequest{}, fmt.Errorf("invalid from date `%s`: %w", req.From, err)
 	}
 
-	if _, err = time.Parse(common.DateLayout, req.To); err != nil {
+	if to, err = time.Parse(common.DateLayout, req.To); err != nil {
 		return ReserveRoomRequest{}, fmt.Errorf("invalid to date `%s`: %w", req.To, err)
 	}
 

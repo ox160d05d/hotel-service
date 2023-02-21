@@ -58,16 +58,16 @@ func (h *CreateOrderCommandHandler) Do(ctx context.Context, c CreateOrderCommand
 	newOrder := entity.NewOrder(newOrderID, c.UserID, c.ReservationID)
 
 	err := h.txManager.WithTransaction(ctx, func(ctx context.Context) error {
+		if err := h.bookingService.ConfirmReservation(ctx, c.ReservationID); err != nil {
+			return fmt.Errorf("error on bookingService.ConfirmReservation: %w", err)
+		}
+
 		err := h.orderRepository.Add(ctx, *newOrder)
 		if err != nil {
 			return fmt.Errorf("error on orderRepository.Add: %w", err)
 		}
 
-		if err = h.bookingService.ConfirmReservation(ctx, c.ReservationID); err != nil {
-			return fmt.Errorf("error on bookingService.ConfirmReservation: %w", err)
-		}
-
-		// По эвенту окончательно подверждаем резервацию, отправляем email, выставляем счёт и т.п.
+		// По эвенту отправляем email, выставляем счёт и т.п.
 		// В идеале - записываем event в БД, потом в фоне пушим в databus (transactional outbox pattern)
 		if err := h.databus.PublishOrderCreatedEvent(ctx, *newOrder); err != nil {
 			return fmt.Errorf("error on databus.PublishOrderCreatedEvent: %w", err)

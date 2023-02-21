@@ -15,7 +15,7 @@
 #### Request:
 
 ```
-GET /orders
+GET /orders?user_id=<string>
 ```
 
 #### Response:

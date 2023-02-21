@@ -1,7 +1,6 @@
 package get_user_orders
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -26,9 +25,7 @@ type GetOrdersResponseOrder struct {
 
 func parseRequest(r *http.Request) (GetOrdersRequest, error) {
 	var req GetOrdersRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return GetOrdersRequest{}, fmt.Errorf("invalid JSON: %w", err)
-	}
+	req.UserID = r.URL.Query().Get("user_id")
 
 	if req.UserID == "" {
 		return GetOrdersRequest{}, fmt.Errorf("user ID can not be empty")

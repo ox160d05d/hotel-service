@@ -28,4 +28,7 @@ func init() {
 
 	rooms[common.DefaultHotelID] = make(map[string]entity.Room)
 	rooms[common.DefaultHotelID][room1.ID()] = *room1
+
+	order1 := entity.NewOrder("order1", "user1", "reservation1")
+	orders["order1"] = *order1
 }
